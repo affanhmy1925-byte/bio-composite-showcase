@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bio-Composite Tile | NSRC Project</title>
+<style>
+:root {
+  --navy: #17364b;
+  --blue: #397895;
+  --paper: #f3f6f5;
+  --soil: #bd9569;
+  --soil-dark: #916744;
+  --green: #47775d;
+  --ink: #263945;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.55;
+}
+header {
+  background: var(--navy);
+  color: white;
+  padding: 30px 20px;
+  border-bottom: 5px solid #8db5bd;
+}
+.head-inner, main {
+  max-width: 1080px;
+  margin: auto;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  color: #b9d6dc;
+}
+h1 { font-size: clamp(25px, 4vw, 39px); line-height: 1.2; }
+header p { max-width: 720px; color: #e2edf0; }
+main { padding: 18px; }
+section {
+  background: white;
+  border: 1px solid #d8e1e2;
+  border-radius: 12px;
+  padding: 22px;
+  margin: 20px 0;
+}
+h2 { color: var(--navy); margin-top: 0; }
+h3 { margin-bottom: 5px; color: var(--navy); }
+.small { font-size: 13px; color: #61727b; }
+.tag {
+  display: inline-block;
+  background: #e5eff0;
+  color: #254f60;
+  padding: 4px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.result {
+  border: 1px solid #dbe3e5;
+  border-radius: 9px;
+  padding: 15px;
+}
+.sample {
+  height: 42px;
+  border-radius: 5px;
+  margin: 12px 0;
+  border: 1px solid #ccd5d9;
+}
+.dark { background: #164b9c; }
+.clear {
+  background: linear-gradient(90deg, #f5fbf7, #dcefe6);
+}
+.scale {
+  display: flex;
+  gap: 5px;
+  margin: 10px 0;
+}
+.scale span {
+  flex: 1;
+  height: 15px;
+  border-radius: 3px;
+  background: #e3edf0;
+}
+.scale span:nth-child(1) { background: #e6f1ed; }
+.scale span:nth-child(2) { background: #b7d7d1; }
+.scale span:nth-child(3) { background: #78b3b4; }
+.scale span:nth-child(4) { background: #397b9b; }
+.scale span:nth-child(5) { background: #174b89; }
+.key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+}
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.callout {
+  background: #f2f6f7;
+  border-left: 4px solid var(--blue);
+  padding: 12px 14px;
+  font-size: 14px;
+  margin-top: 15px;
+}
+.model-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.model-card {
+  border: 1px solid #d9e1e2;
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 0;
+}
+.scene {
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(#e7f1f4, #f5f5ed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+  cursor: grab;
+  touch-action: none;
+}
+.scene:active { cursor: grabbing; }
+.world {
+  position: relative;
+  width: 230px;
+  height: 170px;
+  transform-style: preserve-3d;
+  transform: rotateX(55deg) rotateZ(-25deg);
+  flex: none;
+}
+.slab {
+  position: absolute;
+  left: 0;
+  width: 230px;
+  height: 170px;
+  border: 2px solid #876342;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  backface-visibility: visible;
+}
+.earth-bottom {
+  background: #9e754e;
+  transform: translateZ(-60px);
+}
+.earth-mid {
+  background: #c8a477;
+  transform: translateZ(-30px);
+}
+.earth-top {
+  background: #d6b88e;
+  transform: translateZ(0);
+}
+.road-surface {
+  background: #59646b;
+  color: white;
+  height: 42px;
+  transform: translateZ(14px) translateY(-64px);
+  border-color: #37464e;
+}
+.tile-layer {
+  height: 25px;
+  background: #d8c88e;
+  color: #463b20;
+  border: 3px solid #70603a;
+  transform: translateZ(-10px) translateY(10px);
+}
+.grass {
+  position: absolute;
+  left: 0;
+  width: 230px;
+  height: 170px;
+  background: #73936a;
+  opacity: .9;
+  transform: translateZ(5px);
+  border: 2px solid #58764e;
+}
+.roadside-road {
+  position: absolute;
+  width: 230px;
+  height: 65px;
+  top: -65px;
+  left: 0;
+  background: #58636a;
+  border: 2px solid #38454c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(13px);
+}
+.verge {
+  position: absolute;
+  width: 230px;
+  height: 65px;
+  top: 0;
+  left: 0;
+  background: #7d9b69;
+  border: 2px solid #55744d;
+  transform: translateZ(12px);
+}
+.tile-roadside {
+  position: absolute;
+  width: 130px;
+  height: 32px;
+  top: 18px;
+  left: 50px;
+  background: #d8c88e;
+  border: 3px solid #70603a;
+  color: #463b20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  transform: translateZ(-7px);
+}
+.tile-map {
+  height: 235px;
+  background:
+    radial-gradient(ellipse at 20% 35%, #8b7250 0 2px, transparent 3px),
+    radial-gradient(ellipse at 78% 65%, #67513c 0 2px, transparent 3px),
+    radial-gradient(ellipse at 58% 25%, #a18a5b 0 3px, transparent 4px),
+    #c9b181;
+  background-size: 31px 27px, 43px 36px, 29px 33px, auto;
+  border: 4px solid #8b7652;
+  border-radius: 8px;
+  position: relative;
+  margin: 16px 0;
+}
+.tile-map::after {
+  content: "";
+  position: absolute;
+  inset: 13% 12%;
+  border: 2px dashed #756442;
+  border-radius: 4px;
+}
+.ingredients {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.ingredient {
+  background: #f7f8f5;
+  border: 1px solid #e0e5df;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.swatch {
+  display: inline-block;
+  width: 23px;
+  height: 23px;
+  vertical-align: middle;
+  margin-right: 8px;
+  border: 1px solid #8b8b7b;
+  border-radius: 4px;
+}
+.controls { text-align: center; margin-top: 10px; }
+button {
+  border: 1px solid #315c70;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: white;
+  color: #244e60;
+  cursor: pointer;
+  margin: 3px;
+}
+button:hover { background: #e8f1f3; }
+footer {
+  text-align: center;
+  color: #63727a;
+  font-size: 12px;
+  padding: 25px;
+}
+@media (max-width: 680px) {
+  .model-grid, .results { grid-template-columns: 1fr; }
+  section { padding: 15px; }
+  .scene { height: 260px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <div class="eyebrow">Student research • Qatar</div>
+    <h1>Multi-Waste Polyphenol Bio-Composite Mat</h1>
+    <p>A student-designed concept exploring the reuse of date-palm, tea and coffee waste in a porous composite for environmental applications.</p>
+    <span class="tag">Interactive project display</span>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <h2>01 — Experimental observations</h2>
+  <p>Blue food-colouring water was passed through two sand setups. The observations below are qualitative.</p>
+  <div class="results">
+    <div class="result">
+      <span class="tag">Control</span>
+      <h3>Bare sand</h3>
+      <div class="sample dark"></div>
+      <strong>Dark-blue effluent observed</strong>
+      <p class="small">The collected water appeared strongly blue.</p>
+    </div>
+    <div class="result">
+      <span class="tag">Experimental setup</span>
+      <h3>Sand + tile</h3>
+      <div class="sample clear"></div>
+      <strong>Almost-clear effluent observed</strong>
+      <p class="small">The collected water appeared much less blue.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Interpretation:</strong> The experimental setup showed a visible colour difference. Because the tile and sand were tested together, this observation does not isolate the tile's effect.
+  </div>
+  <p class="small">This is a qualitative comparison, not a numerical graph. The colour swatches illustrate the reported appearance and are not measured data. Food colouring is not a heavy metal; metal immobilisation requires separate metal-specific testing.</p>
+</section>
+
+<section>
+  <h2>02 — Underground cross-section</h2>
+  <p>Explore a conceptual cross-section with the road above and the tile placed horizontally within the soil layers.</p>
+  <div class="model-grid">
+    <div class="model-card">
+      <h3>Buried tile concept</h3>
+      <p class="small">Drag the model to rotate it.</p>
+      <div class="scene" data-model>
+        <div class="world">
+          <div class="slab earth-bottom">Lower soil layer</div>
+          <div class="slab earth-mid">Soil around the tile</div>
+          <div class="slab earth-top">Ground surface layer</div>
+          <div class="slab tile-layer">BIO-COMPOSITE TILE</div>
+          <div class="slab road-surface">ROAD SURFACE</div>
+        </div>
+      </div>
+      <div class="controls"><button data-reset>Reset view</button></div>
+    </div>
+
+    <div class="model-card">
+      <h3>Roadside placement concept</h3>
+      <p class="small">A proposed placement beside the road, not a tested installation.</p>
+      <div class="scene" data-model>
+        <div class="world">
+          <div class="slab earth-bottom">Subsoil</div>
+          <div class="slab earth-mid">Soil profile</div>
+          <div class="slab grass">Ground</div>
+          <div class="slab road-surface">ROAD</div>
+          <div class="slab tile-layer">Tile in soil</div>
+        </div>
+      </div>
+      <div class="controls"><button data-reset>Reset view</button></div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Design note:</strong> Actual placement depth, soil stability, drainage, durability and safe handling would need to be tested before real-world use.
+  </div>
+</section>
+
+<section>
+  <h2>03 — What's inside the composite?</h2>
+  <p>The diagram below represents the finished tile from above. The ingredient list identifies the materials used in the prototype.</p>
+  <div class="tile-map" aria-label="Illustration of the tile surface"></div>
+  <div class="ingredients">
+    <div class="ingredient">
+      <span class="swatch" style="background:#8d7653"></span>
+      <strong>Date-palm leaves</strong><br>
+      <span class="small">Processed plant fibres forming the main scaffold.</span>
+    </div>
+    <div class="ingredient">
+      <span class="swatch" style="background:#5a4937"></span>
+      <strong>Spent coffee grounds</strong><br>
+      <span class="small">Fine waste material incorporated into the mixture.</span>
+    </div>
+    <div class="ingredient">
+      <span class="swatch" style="background:#88705a"></span>
+      <strong>Black tea waste</strong><br>
+      <span class="small">Contains plant compounds, including polyphenols.</span>
+    </div>
+    <div class="ingredient">
+      <span class="swatch" style="background:#e6d7a8"></span>
+      <strong>Cornstarch binder</strong><br>
+      <span class="small">Helps hold the composite together.</span>
+    </div>
+  </div>
+  <p class="small">Baking soda was used during preparation as a pretreatment. It is not shown as a main structural ingredient in the finished tile.</p>
+</section>
+
+<section>
+  <h2>04 — Next steps for further research</h2>
+  <ul>
+    <li>Repeat the experiment with multiple trials.</li>
+    <li>Record effluent colour using a consistent method.</li>
+    <li>Compare sand-only and tile-containing setups under the same conditions.</li>
+    <li>Use an appropriate laboratory method to test actual heavy-metal concentrations before making claims about metal removal.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  Student science project • Concept illustrations are not to scale
+</footer>
+
+<script>
+document.querySelectorAll("[data-model]").forEach(scene => {
+  const world = scene.querySelector(".world");
+  let x = 55, y = -25, dragging = false, px = 0, py = 0;
+
+  function render() {
+    world.style.transform = `rotateX(${x}deg) rotateZ(${y}deg)`;
+  }
+  scene.addEventListener("pointerdown", event => {
+    dragging = true;
+    px = event.clientX;
+    py = event.clientY;
+    scene.setPointerCapture(event.pointerId);
+  });
+  scene.addEventListener("pointermove", event => {
+    if (!dragging) return;
+    y += (event.clientX - px) * 0.7;
+    x -= (event.clientY - py) * 0.6;
+    x = Math.max(10, Math.min(85, x));
+    px = event.clientX;
+    py = event.clientY;
+    render();
+  });
+  function stop() { dragging = false; }
+  scene.addEventListener("pointerup", stop);
+  scene.addEventListener("pointercancel", stop);
+  scene.parentElement.querySelector("[data-reset]").addEventListener("click", () => {
+    x = 55;
+    y = -25;
+    render();
+  });
+  render();
+});
+</script>
+</body>
+</html>
